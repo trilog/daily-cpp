@@ -18,23 +18,17 @@ void PrePermute (const list<NumOp>& numList, const list<NumOp>& opList);
 void Permute    (const list<NumOp>& head,    const list<NumOp>& tail);
 void OpPermute  (const list<NumOp>& opHead,  list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList);
 
-std::plus<int>       DPlus;
-std::minus<int>      DMinus;
-std::multiplies<int> DMultiplies;
-std::divides<int>    DDivides;
-
-
 int main()
 {
-//    list<NumOp> numList({ 25, 50, 75, 100, 3, 6 });
+    //    list<NumOp> numList({ 25, 50, 75, 100, 3, 6 });
     list<NumOp> numList({ 25, 50 });
     list<NumOp> opList;
-    opList.emplace_back(DPlus);
-    opList.emplace_back(DMinus);
-//    opList.emplace_back(DMultiplies);
-//    opList.emplace_back(DDivides);
+    opList.emplace_back(std::plus<int>());
+//    opList.emplace_back(std::minus<int>());
+//    opList.emplace_back(std::multiplies<int>());
+//    opList.emplace_back(std::divides<int>());
 
-//    Print(numberList);
+    //    Print(numberList);
     PrePermute(numList, opList);
     return 0;
 }
@@ -76,7 +70,10 @@ void Permute(const list<NumOp>& head, const list<NumOp>& tail)
 {
     if (tail.empty())
     {
-        Print(head);
+        if ((--head.cend())->IsOperator()) // Operator must be in final position
+        {
+            Print(head);
+        }
         return;
     }
     size_t size = tail.size();
@@ -85,6 +82,7 @@ void Permute(const list<NumOp>& head, const list<NumOp>& tail)
         list<NumOp> newTail = tail;
         list<NumOp>::const_iterator it = newTail.begin();
         advance(it, pos);
+        if ((head.size() < 2) && it->IsOperator()) continue; // Can't have operator in first 2 positions
         list<NumOp> newHead = head;
         newHead.emplace_back(*it);
         newTail.erase(it);

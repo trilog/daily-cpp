@@ -11,12 +11,12 @@ typedef function<int(int, int)> BinFunc;
 class NumOp
 {
     public:
-              NumOp       (const int& _value);
-              NumOp       (const BinFunc& _someOperator);
-        int   Get         ();
-        int   GetValue    () const { return value; }
-        void  SetOperator (const BinFunc& _someOperator);
-        bool  IsOperator  () const { return isOperator; }
+              NumOp         (const int& _value);
+              NumOp         (const BinFunc& _someOperator);
+        bool  IsOperator    () const { return isOperator; }
+        int   Get           ();
+        int   GetValue      () const { return value; }
+        BinFunc GetOperator () const { return someOperator; }
         friend ostream& operator<< (ostream& os, const NumOp& numOp);
     private:
         int  value;
