@@ -3,11 +3,6 @@
 // * https://www.reddit.com/r/dailyprogrammer/comments/452omr/             * //
 // ************************************************************************* //
 
-#include <functional>
-using std::plus;
-using std::minus;
-using std::multiplies;
-using std::divides;
 #include <iterator>
 using std::advance;
 #include <iostream>
@@ -16,33 +11,68 @@ using std::endl;
 #include <list>
 using std::list;
 
+#include "NumOp.h"
 
-void Print (const list<int>& input);
-void Permute(const list<int>& input);
-void Permute(const list<int>& head, const list<int>& tail);
+void Print      (const list<NumOp>& input);
+void PrePermute (const list<NumOp>& numList, const list<NumOp>& opList);
+void Permute    (const list<NumOp>& head,    const list<NumOp>& tail);
+void OpPermute  (const list<NumOp>& opHead,  list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList);
+
+std::plus<int>       DPlus;
+std::minus<int>      DMinus;
+std::multiplies<int> DMultiplies;
+std::divides<int>    DDivides;
+
 
 int main()
 {
-    list<int> input({ 25, 50, 75, 100, 3, 6 });
-    Print(input);
-    Permute(input);
-    
+//    list<NumOp> numList({ 25, 50, 75, 100, 3, 6 });
+    list<NumOp> numList({ 25, 50 });
+    list<NumOp> opList;
+    opList.emplace_back(DPlus);
+    opList.emplace_back(DMinus);
+//    opList.emplace_back(DMultiplies);
+//    opList.emplace_back(DDivides);
+
+//    Print(numberList);
+    PrePermute(numList, opList);
     return 0;
 }
 
-void Print(const list<int>& input)
+void Print(const list<NumOp>& input)
 {
-    for (const int& i : input) cout << i << " ";
+    for (const NumOp& i : input) cout << i << " ";
     cout << endl;
 }
 
-void Permute(const list<int>& input)
+void PrePermute(const list<NumOp>& numList, const list<NumOp>& opList)
 {
-    list<int> head;
-    Permute(head, input);
+    list<NumOp> opHead;
+    list<NumOp> opTail(numList.size() - 1, *opList.begin());
+    OpPermute(opHead, opTail, opList, numList);
 }
 
-void Permute(const list<int>& head, const list<int>& tail)
+void OpPermute  (const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList)
+{
+    if (opTail.empty()) 
+    {
+        list<NumOp> newHead;
+        list<NumOp> newList = numList;
+        list<NumOp> newOpHead = opHead;
+        newList.splice(newList.end(), newOpHead);
+        Permute(newHead, newList);
+        return;
+    }
+    opTail.pop_front();
+    for (const NumOp& op : opList)
+    {
+        list<NumOp> newOpHead = opHead;
+        newOpHead.push_back(op);
+        OpPermute(newOpHead, opTail, opList, numList);
+    }
+}
+
+void Permute(const list<NumOp>& head, const list<NumOp>& tail)
 {
     if (tail.empty())
     {
@@ -52,10 +82,10 @@ void Permute(const list<int>& head, const list<int>& tail)
     size_t size = tail.size();
     for (size_t pos = 0; pos < size; ++pos)
     {
-        list<int> newTail = tail;
-        list<int>::const_iterator it = newTail.begin();
+        list<NumOp> newTail = tail;
+        list<NumOp>::const_iterator it = newTail.begin();
         advance(it, pos);
-        list<int> newHead = head;
+        list<NumOp> newHead = head;
         newHead.emplace_back(*it);
         newTail.erase(it);
         Permute(newHead, newTail);
