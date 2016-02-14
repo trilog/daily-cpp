@@ -3,6 +3,7 @@
 // * https://www.reddit.com/r/dailyprogrammer/comments/452omr/             * //
 // ************************************************************************* //
 
+#include <cmath>
 #include <iterator>
 using std::advance;
 #include <iostream>
@@ -10,43 +11,61 @@ using std::cout;
 using std::endl;
 #include <list>
 using std::list;
+#include <map>
+using std::map;
+using std::pair;
+#include <stack>
+using std::stack;
 
 #include "NumOp.h"
 
 void Print      (const list<NumOp>& input);
-void PrePermute (const list<NumOp>& numList, const list<NumOp>& opList);
-void Permute    (const list<NumOp>& head,    const list<NumOp>& tail);
-void OpPermute  (const list<NumOp>& opHead,  list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList);
+void Summarize  (const map<long, int>& resultMap);
+void PrePermute (const list<NumOp>& numList, const list<NumOp>& opList, map<long, int>& resultMap, const int& target);
+void Permute    (const list<NumOp>& head, const size_t headOps, const list<NumOp>& tail, map<long, int>& resultMap, const int& target);
+void OpPermute  (const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList, map<long, int>& resultMap, const int& target);
+double RPN(const list<NumOp>& input, bool& wentNegative);
 
 int main()
 {
-    //    list<NumOp> numList({ 25, 50, 75, 100, 3, 6 });
-    list<NumOp> numList({ 25, 50 });
-    list<NumOp> opList;
-    opList.emplace_back(std::plus<int>());
-//    opList.emplace_back(std::minus<int>());
-//    opList.emplace_back(std::multiplies<int>());
-//    opList.emplace_back(std::divides<int>());
-
-    //    Print(numberList);
-    PrePermute(numList, opList);
+    int target = 952;
+    list<NumOp> numList({ 25, 50, 75, 100, 3, 6 });
+    list<NumOp> opList({ PLUS, MINUS, MULTIPLIES, DIVIDES });
+    map<long, int> resultMap;
+    PrePermute(numList, opList, resultMap, target);
+    // Print(resultMap);
+    Summarize(resultMap);
     return 0;
 }
+
+// **************** Print *********************************
 
 void Print(const list<NumOp>& input)
 {
     for (const NumOp& i : input) cout << i << " ";
+}
+
+void Summarize(const map<long, int>& resultMap)
+{
+    cout << "Combinations: " << resultMap.size() << endl;
+    cout << "Unobtained numbers [0, 1000]: " << endl;
+    for (int i = 0; i <= 1000; ++i)
+    {
+        if (resultMap.find(i) == resultMap.end()) cout << i << ", ";
+    }
     cout << endl;
 }
 
-void PrePermute(const list<NumOp>& numList, const list<NumOp>& opList)
+// **************** Permute *******************************
+
+void PrePermute(const list<NumOp>& numList, const list<NumOp>& opList, map<long, int>& resultMap, const int& target)
 {
     list<NumOp> opHead;
     list<NumOp> opTail(numList.size() - 1, *opList.begin());
-    OpPermute(opHead, opTail, opList, numList);
+    OpPermute(opHead, opTail, opList, numList, resultMap, target);
 }
 
-void OpPermute  (const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList)
+void OpPermute(const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp>& opList, const list<NumOp>& numList, map<long, int>& resultMap, const int& target)
 {
     if (opTail.empty()) 
     {
@@ -54,7 +73,8 @@ void OpPermute  (const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp
         list<NumOp> newList = numList;
         list<NumOp> newOpHead = opHead;
         newList.splice(newList.end(), newOpHead);
-        Permute(newHead, newList);
+        int headOps = 0;
+        Permute(newHead, headOps, newList, resultMap, target);
         return;
     }
     opTail.pop_front();
@@ -62,30 +82,88 @@ void OpPermute  (const list<NumOp>& opHead, list<NumOp> opTail, const list<NumOp
     {
         list<NumOp> newOpHead = opHead;
         newOpHead.push_back(op);
-        OpPermute(newOpHead, opTail, opList, numList);
+        OpPermute(newOpHead, opTail, opList, numList, resultMap, target);
     }
 }
 
-void Permute(const list<NumOp>& head, const list<NumOp>& tail)
+void Permute(const list<NumOp>& head, const size_t headOps, const list<NumOp>& tail, map<long, int>& resultMap, const int& target)
 {
+    if (head.size() == 1) // heartbeat
+    {
+        cout << "  ";
+        Print(tail);
+        cout << endl;
+    }
     if (tail.empty())
     {
-        if ((--head.cend())->IsOperator()) // Operator must be in final position
+        bool wentNegative = false;
+        double total = RPN(head, wentNegative);
+        if (!wentNegative)
         {
-            Print(head);
+            if (resultMap.find((long) total) != resultMap.end()) resultMap[(long) total]++;
+            else resultMap[(long) total] = 1;
+            if (fabs(total - (double) target) < 0.001)
+            {
+                cout << "Target found: ";
+                Print(head);
+                cout << "= " << total << endl;
+            }
         }
         return;
     }
     size_t size = tail.size();
     for (size_t pos = 0; pos < size; ++pos)
     {
+        size_t newHeadOps = headOps;
+        list<NumOp> newHead = head;
         list<NumOp> newTail = tail;
         list<NumOp>::const_iterator it = newTail.begin();
         advance(it, pos);
-        if ((head.size() < 2) && it->IsOperator()) continue; // Can't have operator in first 2 positions
-        list<NumOp> newHead = head;
+
+        if (it->IsOperator())
+        {
+            if ((head.size() - (2 *newHeadOps)) < 2 ) continue;
+            else ++newHeadOps;
+        }
+
         newHead.emplace_back(*it);
         newTail.erase(it);
-        Permute(newHead, newTail);
+        Permute(newHead, newHeadOps, newTail, resultMap, target);
     }
+}
+
+// **************** Reverse Polish Notation ***************
+
+double RPN(const list<NumOp>& input, bool& wentNegative)
+{
+    wentNegative = false;
+    stack<double> stackRPN;
+    for (const NumOp& item : input)
+    {
+        if (item.IsOperator())
+        {
+            double value2 = (double) stackRPN.top();
+            stackRPN.pop();
+            double value1 = (double) stackRPN.top();
+            stackRPN.pop();
+            switch(item.GetOperator())
+            {
+                case PLUS:
+                    stackRPN.emplace(value1 + value2);
+                    break;
+                case MINUS:
+                    stackRPN.emplace(value1 - value2);
+                    break;
+                case MULTIPLIES:
+                    stackRPN.emplace(value1 * value2);
+                    break;
+                case DIVIDES:
+                    stackRPN.emplace(value1 / value2);
+                    break;
+            }
+            if (stackRPN.top() < 0) wentNegative = true;
+        }
+        else stackRPN.emplace((double) item.GetValue());
+    }
+    return stackRPN.top();
 }

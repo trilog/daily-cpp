@@ -1,27 +1,27 @@
 #ifndef __NUMOP__
 #define __NUMOP__
 
-#include <functional>
-using std::function;
 #include <ostream>
 using std::ostream;
+#include <list>
+using std::list;
 
-typedef function<int(int, int)> BinFunc;
+enum Operator { ACTUALLYWASNUMBERWHOLETIME, PLUS, MINUS, MULTIPLIES, DIVIDES };
 
 class NumOp
 {
     public:
               NumOp         (const int& _value);
-              NumOp         (const BinFunc& _someOperator);
-        bool  IsOperator    () const { return isOperator; }
-        int   Get           ();
+              NumOp         (const Operator& _op);
         int   GetValue      () const { return value; }
-        BinFunc GetOperator () const { return someOperator; }
+        void  SetValue      (int _value);
+        bool  IsOperator    () const { return op != ACTUALLYWASNUMBERWHOLETIME; }
+        int   GetOperator   () const { return op; }
+        void  SetOperator   (const Operator& _op) { op = _op; }
         friend ostream& operator<< (ostream& os, const NumOp& numOp);
     private:
         int  value;
-        bool isOperator;
-        BinFunc someOperator;
+        Operator op;
 };
 
 #endif
