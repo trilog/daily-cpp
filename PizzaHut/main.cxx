@@ -1,6 +1,7 @@
 // ****************************************************************************************** //
 // * 2016.03.14 Pizza Hut Challenge A                                                       * //
 // * http://blog.pizzahut.com/flavor-news/national-pi-day-math-contest-problems-are-here-2/ * //
+// * Output: Answer: 3 8 1 6 5 4 7 2 9 0                                                    * //
 // ****************************************************************************************** //
 
 #include <iostream>
