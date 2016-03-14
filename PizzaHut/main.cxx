@@ -12,15 +12,15 @@ using std::next_permutation;
 #include <vector>
 using std::vector;
 
-bool Checker(const vector<int>& numVec, const int& nDigits);
+bool Checker(const vector<unsigned int>& numVec, const unsigned int& nDigits);
 
 int main()
 {
-    vector<int> numbers({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
+    vector<unsigned int> numbers({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
     do 
     {
         bool checksOut = true;
-        for (int n = 1; n <= numbers.size(); ++n)
+        for (unsigned int n = 1; n <= numbers.size(); ++n)
         {
             if (!Checker(numbers, n)) 
             {
@@ -31,7 +31,7 @@ int main()
         if (checksOut) 
         {
             cout << "Answer: ";
-            for (int& i : numbers) cout << i << " ";
+            for (unsigned int& i : numbers) cout << i << " ";
             cout << endl;
         }
     } 
@@ -39,10 +39,10 @@ int main()
     return 0;
 }
 
-bool Checker(const vector<int>& numVec, const int& nDigits)
+bool Checker(const vector<unsigned int>& numVec, const unsigned int& nDigits)
 {
     unsigned int newNumber = 0;
-    for (int i = 0; i < nDigits; ++i)
+    for (unsigned int i = 0; i < nDigits; ++i)
     {
         newNumber *= 10;
         newNumber += numVec.at(i);

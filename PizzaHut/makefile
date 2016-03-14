@@ -1,5 +1,5 @@
 CC=g++
-CXXFLAGS=-c -std=c++11 -O6
+CXXFLAGS=-c -Wall -std=c++11 -O6
 TARGET=pizza
 OBJ=main.o
 
