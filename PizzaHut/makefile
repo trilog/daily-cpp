@@ -1,0 +1,13 @@
+CC=g++
+CXXFLAGS=-c -std=c++11 -O6
+TARGET=pizza
+OBJ=main.o
+
+$(TARGET): $(OBJ)
+	$(CC) -o $(TARGET) $(OBJ)
+
+main.o: main.cxx
+	$(CC) $(CXXFLAGS) main.cxx
+
+clean:
+	rm *.o $(TARGET)
