@@ -1,0 +1,4 @@
+chat.freenode.net:6667
+KittenEconomy
+kitten_based_economy
+Kitten Based Economy
