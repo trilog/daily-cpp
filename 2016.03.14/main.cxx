@@ -51,5 +51,10 @@ int main(const int argc, const char** argv)
         cout << "Enter Real name: ";
         cin >> realName;
     }
+    cout << "Server: " << server << " Port: " << port << endl;
+    cout << "Nick: " << nickName << endl;
+    cout << "User: " << userName << endl;
+    cout << "Real: " << realName << endl;
+
     return 0;
 }
