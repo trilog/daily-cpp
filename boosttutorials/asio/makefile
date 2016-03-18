@@ -1,7 +1,7 @@
 CC=g++
 CXXFLAGS=-c -Wall -std=c++11 -O6 -lboost_system
 LDFLAGS=-lboost_system
-TARGET=timer3
+TARGET=timer4
 OBJ=$(TARGET).o
 
 $(TARGET): $(OBJ)
