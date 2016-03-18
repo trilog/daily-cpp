@@ -5,6 +5,7 @@
 
 #include <iostream>
 using std::cerr;
+using std::cin;
 using std::cout;
 using std::endl;
 #include <fstream>
@@ -50,5 +51,10 @@ int main(const int argc, const char** argv)
         cout << "Enter Real name: ";
         cin >> realName;
     }
+    cout << "Server: " << server << " Port: " << port << endl;
+    cout << "Nick: " << nickName << endl;
+    cout << "User: " << userName << endl;
+    cout << "Real: " << realName << endl;
+
     return 0;
 }
